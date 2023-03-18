@@ -61,7 +61,7 @@ def translate_text(item):
   if item.tgt_language.lower() not in models[item.src_language.lower()]:
     raise ValueError(f"Target language {item.tgt_language} unsupported")
 
-  logging.info(f" Q: {item.text}")
+  logging.debug(f" Q: {item.text}")
 
   if isinstance(item.text, str):
     text = [item.text]
@@ -161,7 +161,7 @@ def initialize():
       )
 
   logging.info(f'Loaded models {[ (models[src_lang][tgt_lang].tag,models[src_lang][tgt_lang].platform) for src_lang in models for tgt_lang in models[src_lang] ]}')
-  logging.info(f'Initialization finished in {round(time()-time0,2)}s')
+  logging.info(f'Initialization finished in {time()-time0:.2f}s')
 
   start_time = arrow.utcnow().isoformat()
   num_requests_processed = 0
@@ -180,7 +180,11 @@ def main():
     item = Item(
       src_language="en",
       tgt_language="sl",
-      text="Once more unto the breach, dear friends, once more. Test sentence."
+      text=[
+        "Now it happened that the king of the land held a feast which was to last three days, and out of those who came to it his son was to choose a bride for himself; and Cinderella's two sisters were asked to come. ",
+        "So they called Cinderella, and said, \"Now, comb our hair, brush our shoes, and tie our sashes for us, for we are going to dance at the king's feast.\" ",
+        "Then she did as she was told, but when all was done she could not help crying, for she thought to herself, she would have liked to go to the dance too, and at last she begged her mother very hard to let her go, \"You! Cinderella?\" said she;",
+      ]
     )
 
     translated, text_len, duration_secs = translate_text(item)
@@ -189,7 +193,9 @@ def main():
   
   pprint(translated)
   print(f"{repeat_times} translations took {duration_all:.2f}s or {duration_all/repeat_times:.3f}s per translation.")
-  print(f"{repeat_times} translations had {text_len_all} chars or {text_len_all/repeat_times} average chars.")
+  print(f"{repeat_times} translations had  {text_len_all} chars or {text_len_all/repeat_times} average chars.")
+  print(f"That is {text_len_all/duration_all:.3f} chars per second.")
+  print(f"Or {duration_all/text_len_all:.3f} seconds per char.")
   
 
 
