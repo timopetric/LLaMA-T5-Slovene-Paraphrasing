@@ -185,6 +185,8 @@ def main():
   ########################################
   # measure translation performance/speed
   ########################################
+
+  # config params
   text_orig = [
     "Kultni ameriški tehno freak PLASTIKMAN že vrsto let velja za enega izmed najbolj inovativnih in produktivnih ustvarjalcev sodobne elektronske glasbe.",
     "Prehod iz leta 2004 na 2005 je bil za ameriško igralko Jennifer Aniston izjemno težek, saj je to bilo obdobje, ko se je po desetih letih poslovila od serije Prijatelji, a to ni bilo vse. ",
@@ -196,24 +198,26 @@ def main():
     "Dogodek je namenjen predvsem študentom zaključnih letnikov prve stopnje, ki morajo v začetku aprila prijaviti teme diplomskih del.",
   ]
   lang_orig = "sl"
+  translation_pairs_chain = [
+    ("sl", "en"),
+    ("en", "es"),
+    ("es", "en"),
+    ("en", "sl"),
+  ]
+  debug_measure_performance = False
   
-  repeat_times = 1
+  repeat_times = 100 if debug_measure_performance == True else 1
   duration_all = 0
   text_len_all = 0
-  for i in trange(repeat_times, desc=f"Translating {repeat_times} texts."):
+  for i in trange(repeat_times, desc=f"Translating {repeat_times} texts.", disable=not debug_measure_performance):
     # slo -> en -> es -> en -> slo
-    text_src = text_orig
 
     if i == repeat_times-1: print("#"*50)
     if i == repeat_times-1: print(f"{lang_orig:5s}:", text_orig)
     if i == repeat_times-1: print("-"*50)
     
-    for lang_src, lang_tgt in [
-          ("sl", "en"),
-          ("en", "es"),
-          ("es", "en"),
-          ("en", "sl"),
-        ]:
+    text_src = text_orig
+    for lang_src, lang_tgt in translation_pairs_chain:
       
       item = Item(src_language=lang_src, tgt_language=lang_tgt, text=text_src)
       translated, text_len, duration_secs = translate_text(item)
@@ -222,15 +226,16 @@ def main():
       if i == repeat_times-1: print("-"*50)
       text_src = translated
 
-    translated, text_len, duration_secs = translate_text(item)
+    # translated, text_len, duration_secs = translate_text(item)
     text_len_all += text_len
     duration_all += duration_secs
 
-  print("#"*50)
-  print(f"{repeat_times} translations took {duration_all:.2f}s or {duration_all/repeat_times:.3f}s per translation.")
-  print(f"{repeat_times} translations had  {text_len_all} chars or {text_len_all/repeat_times} average chars.")
-  print(f"That is {text_len_all/duration_all:.3f} chars per second.")
-  print(f"Or {duration_all/text_len_all:.3f} seconds per char.")
+  if debug_measure_performance == True:
+    print("#"*50)
+    print(f"{repeat_times} translations took {duration_all:.2f}s or {duration_all/repeat_times:.3f}s per translation.")
+    print(f"{repeat_times} translations had  {text_len_all} chars or {text_len_all/repeat_times} average chars.")
+    print(f"That is {text_len_all/duration_all:.3f} chars per second.")
+    print(f"Or {duration_all/text_len_all:.3f} seconds per char.")
 
   print("#"*50)
   print("############### Direct comparison: ###############")
