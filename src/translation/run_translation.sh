@@ -12,3 +12,4 @@ srun \
         --nv \
         ./containers/nmt.sif \
         python run_translation.py
+        # python read_sentences.py

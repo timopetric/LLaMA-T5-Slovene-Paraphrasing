@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# a file to convert the dockerfile to singularity file
+# a file to convert the Slovene_NMT dockerfile to a singularity file
 # not needed - use Singularity.def image that is provided
 
 module load Anaconda3

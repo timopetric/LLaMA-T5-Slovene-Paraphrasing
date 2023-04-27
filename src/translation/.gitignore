@@ -1,2 +1,18 @@
 models/*
 *.out
+
+processed/*.out
+processed/*.txt
+processed/*.zip
+
+opus/**
+
+logs/*.out
+logs/*.err
+
+containers/*.sif
+
+# for symlinks
+opus
+models
+containers
