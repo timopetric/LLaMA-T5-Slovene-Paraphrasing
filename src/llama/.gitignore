@@ -1,0 +1,8 @@
+containers/**
+model_hf_vicuna/**
+data/**
+
+# optional symlink to dirs
+containers
+model_hf_vicuna
+data

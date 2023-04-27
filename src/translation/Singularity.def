@@ -10,10 +10,3 @@ mkdir -p /opt/nmt
 git clone https://github.com/clarinsi/Slovene_NMT.git /opt/nmt
 python3 -m pip install -r /opt/nmt/requirements.txt
 cd /opt/nmt
-
-%runscript
-cd /opt/nmt
-exec python3 server.py "$@"
-%startscript
-cd /opt/nmt
-exec python3 server.py "$@"
