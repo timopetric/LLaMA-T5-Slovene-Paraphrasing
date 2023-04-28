@@ -7,6 +7,7 @@ MODEL_CHECKPOINT_TO_FINETUNE = "cjvt/t5-sl-small"
 BATCH_SIZE = 32    # works for now
 
 DATASET_PATH = None # add path to dataset here
+# DATASET_PATH = "/d/hpc/home/tp1859/nlp/nlp-course-skupina-8/src/translation/processed"
 OUT_MODEL_CHECKPOINTS_DIR = "/d/hpc/projects/FRI/tp1859/nlp_project8/t5_model_checkpoints"
 
 T5_INPUT_LEN_MAX = 512
