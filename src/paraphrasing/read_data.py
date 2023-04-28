@@ -1,7 +1,8 @@
 import os
-from typing import Union
+from typing import Union, List
 from datasets.arrow_dataset import Dataset
 import pandas as pd
+
 
 def remove_short_sentences_by_chars(original, translated, min_length=30):
     new1, new2 = list(), list()
@@ -10,6 +11,7 @@ def remove_short_sentences_by_chars(original, translated, min_length=30):
             new1.append(s1)
             new2.append(s2)
     return new1, new2    
+
     
 def remove_sentences_with_too_many_numbers(original, translated, max_numbers=20):
     new1, new2 = list(), list()
@@ -19,6 +21,7 @@ def remove_sentences_with_too_many_numbers(original, translated, max_numbers=20)
             new2.append(s2)
     return new1, new2
 
+
 def remove_sentences_with_too_many_special_characters(original, translated, max_special_characters=20):
     new1, new2 = list(), list()
     for s1, s2 in zip(original, translated):
@@ -27,7 +30,8 @@ def remove_sentences_with_too_many_special_characters(original, translated, max_
             new2.append(s2)
     return new1, new2
 
-def read(path: str = "../../data/euparl600k_ensl", preprocess: Union[list[callable], None] = None) -> Dataset:
+
+def read(path: str = "../../data/euparl600k_ensl", preprocess: Union[List[callable], None] = None) -> Dataset:
     original, translated = list(), list()
     with open(os.path.join(path, "europarl-orig-sl-all.out")) as file:
         while True:
