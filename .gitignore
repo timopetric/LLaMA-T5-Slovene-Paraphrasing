@@ -130,3 +130,7 @@ dmypy.json
 
 
 .DS_STORE
+
+
+**/*.zip
+src/tmp/**

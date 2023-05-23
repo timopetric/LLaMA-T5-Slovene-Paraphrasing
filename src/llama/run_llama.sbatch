@@ -3,15 +3,15 @@
 #SBATCH --output=logs/nlp-%a.out   # LOG TO OUTPUT FILE (%a IS THE TASK ID IN ARRAY)  ! logs dir must exist !
 #SBATCH --error=logs/nlp-%a.err    # LOG TO ERROR FILE  (%a IS THE TASK ID IN ARRAY)  ! logs dir must exist !
 #SBATCH --partition=gpu            # SELECT THE PARTITION (FOR GPU USE gpu)
-#SBATCH --time=2-00:00             # TIME LIMIT (D-HH:MM:SS) (GPU partition MAX 4D)
+#SBATCH --time=4-00:00             # TIME LIMIT (D-HH:MM:SS) (GPU partition MAX 4D)
 #SBATCH --gpus=1                   # SELECT 1 GPU per array task
 #SBATCH --cpus-per-task=12         # SELECT 12 CPUs for each array task
 #SBATCH --mem=30G                  # SELECT 30 GB OF RAM for each array task
 #SBATCH --nodes=1                  # SELECT 1 NODE
 #SBATCH --array=0
 
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=TODO@student.uni-lj.si
+##SBATCH --mail-type=ALL
+##SBATCH --mail-user=TODO@student.uni-lj.si
 
 # #############################################
 # # Run vicuna 13B model for paraphrasing
