@@ -58,23 +58,25 @@ def remove_sentences_with_different_lengths(original, translated, parascores, ma
     return new1, new2, new3
 
 
-def read(path: str = "../../data/euparl600k_ensl", preprocess: Union[List[callable], None] = None, shuffle: bool = True, sort: bool = False) -> Dataset:
+def read(path: str = "../../data/euparl600k_ensl", orig_sl_filename: str = "europarl-orig-sl-all.out", tran_sl_filename: str = "europarl-tran-all.out", parascore_filename: Union[str, None] = "parascores.out", preprocess: Union[List[callable], None] = None, shuffle: bool = True, sort: bool = False) -> Dataset:
     original, translated, parascores = list(), list(), list()
-    with open(os.path.join(path, "europarl-orig-sl-all.out")) as file:
+    with open(os.path.join(path, orig_sl_filename)) as file:
         while True:
            l = file.readline()
            if not l: break
            original.append(l.strip("\n"))
-    with open(os.path.join(path, "europarl-tran-all.out")) as file:
+    with open(os.path.join(path, tran_sl_filename)) as file:
         while True:
            l = file.readline()
            if not l: break
            translated.append(l.strip("\n"))
-    with open(os.path.join(path, "parascores.out")) as file:
-        while True:
-           l = file.readline()
-           if not l: break
-           parascores.append(float(l.strip("\n")))
+    if parascore_filename is not None:
+        with open(os.path.join(path, "parascores.out")) as file:
+            while True:
+                l = file.readline()
+                if not l: break
+                parascores.append(float(l.strip("\n")))
+    else: parascores = [1.0] * len(original)
     if preprocess:
         for p in preprocess:
             original, translated, parascores = p(original, translated, parascores)
@@ -90,7 +92,7 @@ def read(path: str = "../../data/euparl600k_ensl", preprocess: Union[List[callab
     return Dataset.from_pandas(df)
 
 
-def euparl(min_length: int = 75, max_numbers: int = 5, max_special_characters: int = 5, max_length_diff: int = 25, min_parascore: float = 0.5, path: str = "../../data/euparl600k_ensl", shuffle = False, sort = True) -> Dataset:
+def euparl(min_length: int = 75, max_numbers: int = 5, max_special_characters: int = 5, max_length_diff: int = 25, min_parascore: float = 0.5, path: str = "../../data/euparl600k_ensl", orig_sl_filename: str = "europarl-orig-sl-all.out", tran_sl_filename: str = "europarl-tran-all.out", parascore_filename: Union[str, None] = "parascores.out", shuffle: bool = True, sort: bool = False) -> Dataset:
     """
     Function reads data from given path, filters it and returns the result as a dataset.
     Parameters:
@@ -100,8 +102,11 @@ def euparl(min_length: int = 75, max_numbers: int = 5, max_special_characters: i
         -max_length_diff: Maximum tolerated difference in length between a pair of sentences, default 25
         -min_parascore: Minimum parascore, default 0.5
         -path: Path to dataset folder
-        -shuffle: Shuffle the dataset, default False (Only one of sort and shuffle can be True)
-        -sort: Sort the dataset by descending parascores, default True (Only one of sort and shuffle can be True)
+        -orig_sl_filename: Name of file containing original sentences, default europarl-orig-sl-all.out
+        -tran_sl_filename: Name of file containing translated sentences, default europarl-tran-all.out
+        -parascore_filename: Name of file containing translated sentences, default parascores.out, set to None if not available
+        -shuffle: Shuffle the dataset, default True (Only one of sort and shuffle can be True)
+        -sort: Sort the dataset by descending parascores, default False (Only one of sort and shuffle can be True)
     """
 
     preprocess = list()
@@ -110,7 +115,7 @@ def euparl(min_length: int = 75, max_numbers: int = 5, max_special_characters: i
     preprocess.append(lambda x, y, z: remove_sentences_with_too_many_special_characters(x, y, z, max_special_characters=max_special_characters))
     preprocess.append(lambda x, y, z: remove_short_sentences_by_chars(x, y, z, min_length))
     preprocess.append(lambda x, y, z: remove_sentences_with_different_lengths(x, y, z, max_length_diff))
-    return read(path, preprocess=preprocess, shuffle=shuffle, sort=sort)
+    return read(path=path, orig_sl_filename=orig_sl_filename, tran_sl_filename=tran_sl_filename, parascore_filename=parascore_filename,preprocess=preprocess, shuffle=shuffle, sort=sort)
 
 
 if __name__ == "__main__":
