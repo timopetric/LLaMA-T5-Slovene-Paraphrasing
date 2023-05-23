@@ -8,43 +8,58 @@ from nltk.util import ngrams
 from nltk.translate.bleu_score import sentence_bleu
 from tqdm import tqdm
 
-def remove_short_sentences_by_chars(original, translated, min_length=30):
-    new1, new2 = list(), list()
-    for s1, s2 in zip(original, translated):
+def remove_short_sentences_by_chars(original, translated, parascores, min_length=30):
+    new1, new2, new3 = list(), list(), list()
+    for s1, s2, s3 in zip(original, translated, parascores):
         if len(s1) >= min_length and len(s2) >= min_length:
             new1.append(s1)
             new2.append(s2)
-    return new1, new2    
+            new3.append(s3)
+    return new1, new2, new3
 
     
-def remove_sentences_with_too_many_numbers(original, translated, max_numbers=20):
-    new1, new2 = list(), list()
-    for s1, s2 in zip(original, translated):
+def remove_sentences_with_too_many_numbers(original, translated, parascores, max_numbers=20):
+    new1, new2, new3 = list(), list(), list()
+    for s1, s2, s3 in zip(original, translated, parascores):
         if sum([s1.count(str(n)) for n in range(10)]) <= max_numbers and sum([s2.count(str(n)) for n in range(10)]) <= max_numbers:
             new1.append(s1)
             new2.append(s2)
-    return new1, new2
+            new3.append(s3)
+    return new1, new2, new3
 
 
-def remove_sentences_with_too_many_special_characters(original, translated, special_characters = "@#$%^&*()_+=[]{}\\|<>/", max_special_characters=20):
-    new1, new2 = list(), list()
-    for s1, s2 in zip(original, translated):
-        if sum([s1.count(c) for c in special_characters]) <= max_special_characters and sum([s2.count(c) for c in "!@#$%^&*()_+-=[]{};':\"\\|,.<>/?"]) <= max_special_characters:
+def remove_sentences_with_too_many_special_characters(original, translated, parascores, special_characters = "@#$%^&*()_+=[]{}\\|<>/", max_special_characters=20):
+    new1, new2, new3 = list(), list(), list()
+    for s1, s2, s3 in zip(original, translated, parascores):
+        if sum([s1.count(c) for c in special_characters]) <= max_special_characters and sum([s2.count(c) for c in special_characters]) <= max_special_characters:
             new1.append(s1)
             new2.append(s2)
-    return new1, new2
+            new3.append(s3)
+    return new1, new2, new3
 
 
-def remove_identical_sentences(original, translated):
-    new1, new2 = list(), list()
-    for s1, s2 in zip(original, translated):
-        if s1.lower() != s2.lower():
+def remove_sentences_by_parascore(original, translated, parascores, min_=0.0, max_=1.0):
+    new1, new2, new3 = list(), list(), list()
+    for s1, s2, s3 in zip(original, translated, parascores):
+        if min_ <= s3 <= max_ :
             new1.append(s1)
             new2.append(s2)
-    return new1, new2
+            new3.append(s3)
+    return new1, new2, new3
 
-def read(path: str = "../../data/euparl600k_ensl", preprocess: Union[List[callable], None] = None, shuffle: bool = True) -> Dataset:
-    original, translated = list(), list()
+
+def remove_sentences_with_different_lengths(original, translated, parascores, max_diff=10):
+    new1, new2, new3 = list(), list(), list()
+    for s1, s2, s3 in zip(original, translated, parascores):
+        if abs(len(s1)-len(s2))<=max_diff:
+            new1.append(s1)
+            new2.append(s2)
+            new3.append(s3)
+    return new1, new2, new3
+
+
+def read(path: str = "../../data/euparl600k_ensl", preprocess: Union[List[callable], None] = None, shuffle: bool = True, sort: bool = False) -> Dataset:
+    original, translated, parascores = list(), list(), list()
     with open(os.path.join(path, "europarl-orig-sl-all.out")) as file:
         while True:
            l = file.readline()
@@ -55,44 +70,59 @@ def read(path: str = "../../data/euparl600k_ensl", preprocess: Union[List[callab
            l = file.readline()
            if not l: break
            translated.append(l.strip("\n"))
+    with open(os.path.join(path, "parascores.out")) as file:
+        while True:
+           l = file.readline()
+           if not l: break
+           parascores.append(float(l.strip("\n")))
     if preprocess:
         for p in preprocess:
-            original, translated = p(original, translated)
+            original, translated, parascores = p(original, translated, parascores)
     df = pd.DataFrame()
     df["original"] = original
     df["translated"] = translated
-    if shuffle: df = df.sample(frac=1, random_state=42)
+    df["parascores"] = parascores
+    assert (shuffle and sort) == False
+    if shuffle:
+        df = df.sample(frac=1, random_state=42)
+    if sort:
+        df = df.sort_values(by="parascores", ascending=False)
     return Dataset.from_pandas(df)
 
 
-def euparl(min_length: int = 50, max_numbers: int = 5, max_special_characters: int = 5, filter_identical = True, path: str = "../../data/euparl600k_ensl", shuffle = True) -> Dataset:
-    if filter_identical:
-        return read(path, [lambda x, y: remove_sentences_with_too_many_numbers(x, y, max_numbers), lambda x, y: remove_sentences_with_too_many_special_characters(x, y, max_special_characters=max_special_characters), lambda x, y: remove_short_sentences_by_chars(x, y, min_length), lambda x, y: remove_identical_sentences(x, y)], shuffle=shuffle)
-    return read(path, [lambda x, y: remove_sentences_with_too_many_numbers(x, y, max_numbers), lambda x, y: remove_sentences_with_too_many_special_characters(x, y, max_special_characters=max_special_characters), lambda x, y: remove_short_sentences_by_chars(x, y, min_length)], shuffle=shuffle)
+def euparl(min_length: int = 75, max_numbers: int = 5, max_special_characters: int = 5, max_length_diff: int = 25, min_parascore: float = 0.5, path: str = "../../data/euparl600k_ensl", shuffle = False, sort = True) -> Dataset:
+    """
+    Function reads data from given path, filters it and returns the result as a dataset.
+    Parameters:
+        -min_length: Minimum length of sentence in characters, default 75
+        -max_numbers: Maximum amount of digits allowed in a sentence, default 5
+        -max_special_characters: Maximum amount of allowed special characters in a sentence, default 5
+        -max_length_diff: Maximum tolerated difference in length between a pair of sentences, default 25
+        -min_parascore: Minimum parascore, default 0.5
+        -path: Path to dataset folder
+        -shuffle: Shuffle the dataset, default False (Only one of sort and shuffle can be True)
+        -sort: Sort the dataset by descending parascores, default True (Only one of sort and shuffle can be True)
+    """
 
-def edit(x, y):
-    a = len(x)
-    b = len(y)
-    dis = nltk.edit_distance(x,y)
-    return dis/max(a,b)
-
-
-def diverse(cands, sources):
-    diversity = []
-    thresh = 0.35
-    for x, y in tqdm(zip(cands, sources), total=len(cands)):
-        div = edit(x, y)
-        if div >= thresh:
-            ss = thresh
-        elif div < thresh:
-            ss = -1 + ((thresh + 1) / thresh) * div
-        diversity.append(ss)
-    return diversity
+    preprocess = list()
+    preprocess.append(lambda x, y, z: remove_sentences_by_parascore(x, y, z, min_=min_parascore))
+    preprocess.append(lambda x, y, z: remove_sentences_with_too_many_numbers(x, y, z, max_numbers))
+    preprocess.append(lambda x, y, z: remove_sentences_with_too_many_special_characters(x, y, z, max_special_characters=max_special_characters))
+    preprocess.append(lambda x, y, z: remove_short_sentences_by_chars(x, y, z, min_length))
+    preprocess.append(lambda x, y, z: remove_sentences_with_different_lengths(x, y, z, max_length_diff))
+    return read(path, preprocess=preprocess, shuffle=shuffle, sort=sort)
 
 
 if __name__ == "__main__":
-    data = euparl(min_length=0, max_numbers=1e10, max_special_characters=1e10,filter_identical=False,shuffle=False)
-    print(data["original"][0:10])
+    data = euparl()
+    print(len(data))
+    plt.figure()
+    plt.hist(data["parascores"], bins="auto")
+    plt.show()
+    for i in range(10): print(data["parascores"][i], "\n", data["original"][i], "\n", data["translated"][i], "\n")
+    print("##########################\n")
+    for i in range(1,11): print(data["parascores"][-i], "\n", data["original"][-i], "\n", data["translated"][-i], "\n")
+
     exit(0)
     data = euparl(min_length=50, max_numbers=5, max_special_characters=5)
     cands_, refs_ = [list(ngrams(i, 1)) for i in data["translated"]], [list(ngrams(i, 1)) for i in data["original"]] 
