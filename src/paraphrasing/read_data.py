@@ -4,6 +4,8 @@ from datasets.arrow_dataset import Dataset
 import pandas as pd
 import matplotlib.pyplot as plt
 import nltk
+from nltk.util import ngrams
+from nltk.translate.bleu_score import sentence_bleu
 from tqdm import tqdm
 
 def remove_short_sentences_by_chars(original, translated, min_length=30):
@@ -90,8 +92,9 @@ def diverse(cands, sources):
 
 if __name__ == "__main__":
     data = euparl(min_length=50, max_numbers=5, max_special_characters=5)
-    d = diverse(data["original"], data["translated"])
-    plt.hist(d)
+    cands_, refs_ = [list(ngrams(i, 1)) for i in data["translated"]], [list(ngrams(i, 1)) for i in data["original"]] 
+    diversity = [sentence_bleu([c], r) for c, r in tqdm(zip(cands_, refs_), total=len(cands_))]
+    plt.hist(diversity, bins="auto")
     plt.show()
     exit(0)
     lengths = [len(d["original"]) for d in data]

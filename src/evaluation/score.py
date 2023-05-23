@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import numpy as np
 import pandas as pd
-
+from nltk.util import ngrams
+from nltk.translate.bleu_score import sentence_bleu
 from collections import defaultdict
 from transformers import AutoTokenizer
 
@@ -35,6 +36,7 @@ def score(
     all_layers=False,
     use_fast_tokenizer=True,
     diversity_factor=0.05,
+    use_bleu=False
 ):
     """
     BERTScore metric.
@@ -54,6 +56,8 @@ def score(
         - :param: `batch_size` (int): bert score processing batch size
         - :param: `use_fast_tokenizer` (bool): `use_fast` parameter passed to HF tokenizer
         - :param: `diversity_factor` (float): How much diversity contributes to final paraphrase score
+        - :param: `use_bleu` (bool): use bleu score instead of edit distance
+                    for penalizing sentences that are too similar
 
     Return:
         - :param: `(F1)`: each is of shape (N); N = number of input
@@ -111,7 +115,11 @@ def score(
 
     #out = all_preds[..., 0], all_preds[..., 1], all_preds[..., 2]  # P, R, F
     similarity = all_preds[..., 2].numpy()
-    diversity = diverse(cands, refs)
+    if use_bleu:
+        cands_, refs_ = [list(ngrams(i, 1)) for i in cands], [list(ngrams(i, 1)) for i in refs] 
+        diversity = [-sentence_bleu([c], r) for c, r in zip(cands_, refs_)]
+    else:
+        diversity = diverse(cands, refs)
     out = [x + diversity_factor*y for x, y in zip(similarity, diversity)]
     return out
 
