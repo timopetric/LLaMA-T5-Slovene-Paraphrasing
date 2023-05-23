@@ -24,7 +24,7 @@ def remove_sentences_with_too_many_numbers(original, translated, max_numbers=20)
     return new1, new2
 
 
-def remove_sentences_with_too_many_special_characters(original, translated, special_characters = "@#$%^&*()_+=[]{}\\|<>/", max_special_characters=20):
+def remove_sentences_with_too_many_special_characters(original, translated, max_special_characters=20, special_characters="@#$%^&*()_+=[]{}\\|<>/"):
     new1, new2 = list(), list()
     for s1, s2 in zip(original, translated):
         if sum([s1.count(c) for c in special_characters]) <= max_special_characters and sum([s2.count(c) for c in "!@#$%^&*()_+-=[]{};':\"\\|,.<>/?"]) <= max_special_characters:

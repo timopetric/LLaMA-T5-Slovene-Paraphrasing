@@ -5,16 +5,18 @@ import os
 # # BATCH_SIZE = 16 is too large for 32GB GPU memory
 
 MODEL_CHECKPOINT_TO_FINETUNE = "cjvt/t5-sl-small"
-# BATCH_SIZE = 16    # works for now
-# LEARING_RATE = 2e-5  # was
-BATCH_SIZE = 32    # works for now
-LEARING_RATE = 3e-4
-# ADD_END_TOKEN = " </s>"
+BATCH_SIZE = 4
+LEARING_RATE = 3e-5
+# ADD_END_TOKEN = " </s>"  # ? TODO: used for testing, maybe not needed
 ADD_END_TOKEN = None
 REVERSE_INPUT_OUTPUT = False
-GRADIENT_ACCUMULATION_STEPS = 4
+GRADIENT_ACCUMULATION_STEPS = 16
 
-VERSION_STR = "0.0.1-LLaMApara"
+VERSION_STR = "0.0.2-LLaMApara"
+# version history:
+# 0.0.1-LLaMApara - uncleaned euparl-llama dataset (no cleaning, no deduplication)
+# 0.0.2-LLaMApara - cleaned and filtered euparl-llama dataset
+
 
 DATASET_PATH = None # add path to dataset here
 # DATASET_PATH = "/d/hpc/home/tp1859/nlp/nlp-course-skupina-8/src/translation/processed"
