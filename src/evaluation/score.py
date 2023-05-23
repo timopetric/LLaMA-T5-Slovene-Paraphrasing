@@ -116,11 +116,13 @@ def score(
     #out = all_preds[..., 0], all_preds[..., 1], all_preds[..., 2]  # P, R, F
     similarity = all_preds[..., 2].numpy()
     if use_bleu:
-        cands_, refs_ = [list(ngrams(i, 1)) for i in cands], [list(ngrams(i, 1)) for i in refs] 
-        diversity = [-sentence_bleu([c], r) for c, r in zip(cands_, refs_)]
+        cands_, refs_ = [list(ngrams(i.lower(), 1)) for i in cands], [list(ngrams(i.lower(), 1)) for i in refs] 
+        diversity = [1-sentence_bleu([c], r) for c, r in zip(cands_, refs_)]
+        out = [(x*y)**0.5 for x, y in zip(similarity, diversity)]
     else:
         diversity = diverse(cands, refs)
-    out = [x + diversity_factor*y for x, y in zip(similarity, diversity)]
+        out = [x + diversity_factor*y for x, y in zip(similarity, diversity)]
+
     return out
 
 

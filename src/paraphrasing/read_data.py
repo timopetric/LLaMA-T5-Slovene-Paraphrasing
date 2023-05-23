@@ -43,7 +43,7 @@ def remove_identical_sentences(original, translated):
             new2.append(s2)
     return new1, new2
 
-def read(path: str = "../../data/euparl600k_ensl", preprocess: Union[List[callable], None] = None) -> Dataset:
+def read(path: str = "../../data/euparl600k_ensl", preprocess: Union[List[callable], None] = None, shuffle: bool = True) -> Dataset:
     original, translated = list(), list()
     with open(os.path.join(path, "europarl-orig-sl-all.out")) as file:
         while True:
@@ -61,14 +61,14 @@ def read(path: str = "../../data/euparl600k_ensl", preprocess: Union[List[callab
     df = pd.DataFrame()
     df["original"] = original
     df["translated"] = translated
-    df = df.sample(frac=1, random_state=42)
+    if shuffle: df = df.sample(frac=1, random_state=42)
     return Dataset.from_pandas(df)
 
 
-def euparl(min_length: int = 50, max_numbers: int = 5, max_special_characters: int = 5, filter_identical = True, path: str = "../../data/euparl600k_ensl") -> Dataset:
+def euparl(min_length: int = 50, max_numbers: int = 5, max_special_characters: int = 5, filter_identical = True, path: str = "../../data/euparl600k_ensl", shuffle = True) -> Dataset:
     if filter_identical:
-        return read(path, [lambda x, y: remove_sentences_with_too_many_numbers(x, y, max_numbers), lambda x, y: remove_sentences_with_too_many_special_characters(x, y, max_special_characters=max_special_characters), lambda x, y: remove_short_sentences_by_chars(x, y, min_length), lambda x, y: remove_identical_sentences(x, y)])
-    return read(path, [lambda x, y: remove_sentences_with_too_many_numbers(x, y, max_numbers), lambda x, y: remove_sentences_with_too_many_special_characters(x, y, max_special_characters=max_special_characters), lambda x, y: remove_short_sentences_by_chars(x, y, min_length)])
+        return read(path, [lambda x, y: remove_sentences_with_too_many_numbers(x, y, max_numbers), lambda x, y: remove_sentences_with_too_many_special_characters(x, y, max_special_characters=max_special_characters), lambda x, y: remove_short_sentences_by_chars(x, y, min_length), lambda x, y: remove_identical_sentences(x, y)], shuffle=shuffle)
+    return read(path, [lambda x, y: remove_sentences_with_too_many_numbers(x, y, max_numbers), lambda x, y: remove_sentences_with_too_many_special_characters(x, y, max_special_characters=max_special_characters), lambda x, y: remove_short_sentences_by_chars(x, y, min_length)], shuffle=shuffle)
 
 def edit(x, y):
     a = len(x)
@@ -91,6 +91,9 @@ def diverse(cands, sources):
 
 
 if __name__ == "__main__":
+    data = euparl(min_length=0, max_numbers=1e10, max_special_characters=1e10,filter_identical=False,shuffle=False)
+    print(data["original"][0:10])
+    exit(0)
     data = euparl(min_length=50, max_numbers=5, max_special_characters=5)
     cands_, refs_ = [list(ngrams(i, 1)) for i in data["translated"]], [list(ngrams(i, 1)) for i in data["original"]] 
     diversity = [sentence_bleu([c], r) for c, r in tqdm(zip(cands_, refs_), total=len(cands_))]
