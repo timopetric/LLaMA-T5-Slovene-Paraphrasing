@@ -100,7 +100,7 @@ def score(
         cands,
         tokenizer,
         idf_dict,
-        verbose=False,
+        verbose=True,
         device=device,
         batch_size=batch_size,
         all_layers=all_layers,
