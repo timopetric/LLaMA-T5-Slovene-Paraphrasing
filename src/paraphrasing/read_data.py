@@ -3,6 +3,8 @@ from typing import Union, List
 from datasets.arrow_dataset import Dataset
 import pandas as pd
 import matplotlib.pyplot as plt
+import nltk
+from tqdm import tqdm
 
 def remove_short_sentences_by_chars(original, translated, min_length=30):
     new1, new2 = list(), list()
@@ -66,8 +68,32 @@ def euparl(min_length: int = 50, max_numbers: int = 5, max_special_characters: i
         return read(path, [lambda x, y: remove_sentences_with_too_many_numbers(x, y, max_numbers), lambda x, y: remove_sentences_with_too_many_special_characters(x, y, max_special_characters=max_special_characters), lambda x, y: remove_short_sentences_by_chars(x, y, min_length), lambda x, y: remove_identical_sentences(x, y)])
     return read(path, [lambda x, y: remove_sentences_with_too_many_numbers(x, y, max_numbers), lambda x, y: remove_sentences_with_too_many_special_characters(x, y, max_special_characters=max_special_characters), lambda x, y: remove_short_sentences_by_chars(x, y, min_length)])
 
+def edit(x, y):
+    a = len(x)
+    b = len(y)
+    dis = nltk.edit_distance(x,y)
+    return dis/max(a,b)
+
+
+def diverse(cands, sources):
+    diversity = []
+    thresh = 0.35
+    for x, y in tqdm(zip(cands, sources), total=len(cands)):
+        div = edit(x, y)
+        if div >= thresh:
+            ss = thresh
+        elif div < thresh:
+            ss = -1 + ((thresh + 1) / thresh) * div
+        diversity.append(ss)
+    return diversity
+
+
 if __name__ == "__main__":
     data = euparl(min_length=50, max_numbers=5, max_special_characters=5)
+    d = diverse(data["original"], data["translated"])
+    plt.hist(d)
+    plt.show()
+    exit(0)
     lengths = [len(d["original"]) for d in data]
     plt.hist(lengths, bins="auto", label=f"max={max(lengths)}, min={min(lengths)}, mean={sum(lengths)/len(lengths)}")
     plt.legend(loc="upper right")
