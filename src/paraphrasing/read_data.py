@@ -134,7 +134,7 @@ def euparl(min_length: int = 75, max_numbers: int = 5, max_special_characters: i
     preprocess.append(lambda x, y, z: remove_sentences_with_too_many_special_characters(x, y, z, max_special_characters=max_special_characters))
     preprocess.append(lambda x, y, z: remove_short_sentences_by_chars(x, y, z, min_length))
     preprocess.append(lambda x, y, z: remove_sentences_with_different_lengths(x, y, z, max_length_diff))
-    return read(path=path, orig_sl_filename=orig_sl_filename, tran_sl_filename=tran_sl_filename, parascore_filename=parascore_filename,preprocess=preprocess, shuffle=shuffle, sort=sort)
+    return read(path=path, orig_sl_filename=orig_sl_filename, tran_sl_filename=tran_sl_filename, parascore_filename=parascore_filename,preprocess=preprocess, shuffle=shuffle, sort=sort, add_end_token=add_end_token, reverse_input_output=reverse_input_output, print_example_pair=print_example_pair)
 
 
 if __name__ == "__main__":
