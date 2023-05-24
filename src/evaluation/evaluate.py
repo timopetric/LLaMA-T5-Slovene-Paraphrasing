@@ -26,7 +26,8 @@ def main(DATASET_PATH, DATASET_ORIG_SENTS_FILE, DATASET_TRAN_SENTS_FILE):
         min_length=0,
         max_numbers=1e10,
         max_special_characters=1e10,
-        shuffle=False
+        shuffle=False,
+        filter=False
     )
     n = len(data)
     refs = data["original"][:n]
