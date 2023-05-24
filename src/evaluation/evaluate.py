@@ -33,6 +33,8 @@ def main(DATASET_PATH, DATASET_ORIG_SENTS_FILE, DATASET_TRAN_SENTS_FILE):
     refs = data["original"][:n]
     cands = data["translated"][:n]
 
+    print("Length of dataset:", len(refs))
+
     # clear file
     open(PARASCORES_OUT, "w").close()
 
