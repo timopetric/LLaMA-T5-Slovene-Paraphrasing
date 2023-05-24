@@ -30,7 +30,7 @@ VERSION_DATASET_ENDING = "Euparl600k_ensl"
 
 
 
-VERSION_STR = "0.0.4-" + VERSION_DATASET_ENDING
+VERSION_STR = "0.0.5-" + VERSION_DATASET_ENDING
 # version history:
 # 0.0.1-LLaMApara - uncleaned euparl-llama dataset (no cleaning, no deduplication)
 # 0.0.2-LLaMApara - cleaned and filtered euparl-llama dataset
@@ -38,6 +38,9 @@ VERSION_STR = "0.0.4-" + VERSION_DATASET_ENDING
 # 0.0.4-{ds name} - add saving last checkpoint at the end of training
 #           + cleaned and filtered dataset with parascore filtering (default params for it)
 #           + ds name = "LLaMApara" or "Euparl600k_ensl"
+# 0.0.5-{ds name} - imporved dataset cleaning and filtering based on parascore
+#           + dataset should be even smaller now ?
+#           + increased number of epochs to 4 (from 3)
 
 
 PRINT_EXAMPLE_PAIR = True
