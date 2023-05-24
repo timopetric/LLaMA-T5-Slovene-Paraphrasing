@@ -40,19 +40,16 @@ VERSION_STR = "0.0.4-" + VERSION_DATASET_ENDING
 #           + ds name = "LLaMApara" or "Euparl600k_ensl"
 
 
-
-
 PRINT_EXAMPLE_PAIR = True
-
-OUT_MODEL_CHECKPOINTS_DIR = "/d/hpc/projects/FRI/tp1859/nlp_project8/t5_model_checkpoints"
 
 T5_INPUT_LEN_MAX = 512
 T5_TGT_LEN_MAX = 512
 T5_TASK_PREFIX = "parafraziraj: "
 
+OUT_MODEL_CHECKPOINTS_DIR = "/d/hpc/projects/FRI/tp1859/nlp_project8/t5_model_checkpoints"
 # MODEL_CHECKPOINT_FIN_GLOB = "finetune*/checkpoint-*"
 # MODEL_CHECKPOINT_FIN_GLOB = "finetune_t5-sl-small_*_g8_*/checkpoint-*"
-MODEL_CHECKPOINT_FIN_GLOB = "finetune*3808023*/checkpoint-*"
+MODEL_CHECKPOINT_FIN_GLOB = "*v0.0.*/checkpoint*"
 
 
 MODEL_CHECKPOINT_TO_FINETUNE = os.getenv("NLP8_ENV_MODEL_CHECKPOINT_TO_FINETUNE", MODEL_CHECKPOINT_TO_FINETUNE)
