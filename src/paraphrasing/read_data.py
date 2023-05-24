@@ -133,7 +133,8 @@ def euparl(min_length: int = 75,
            sort: bool = False,
            add_end_token=None,
            reverse_input_output=False,
-           print_example_pair=False
+           print_example_pair=False,
+           filter=True
         ) -> Dataset:
     """
     Function reads data from given path, filters it and returns the result as a dataset.
@@ -152,14 +153,17 @@ def euparl(min_length: int = 75,
         -add_end_token: Token to be added at the end of the translated sentences, default None 
         -reverse_input_output: Swaps the original and translated sentences, default False
         -print_example_pair: Prints a random pair of sentences, default False
+        -filter: Whether to run any filtering at all, default True
     """
-
-    preprocess = list()
-    preprocess.append(lambda x, y, z: remove_sentences_by_parascore(x, y, z, min_=min_parascore))
-    preprocess.append(lambda x, y, z: remove_sentences_with_too_many_numbers(x, y, z, max_numbers))
-    preprocess.append(lambda x, y, z: remove_sentences_with_too_many_special_characters(x, y, z, max_special_characters=max_special_characters))
-    preprocess.append(lambda x, y, z: remove_short_sentences_by_chars(x, y, z, min_length))
-    preprocess.append(lambda x, y, z: remove_sentences_with_different_lengths(x, y, z, max_length_diff))
+    if filter:
+        preprocess = list()
+        preprocess.append(lambda x, y, z: remove_sentences_by_parascore(x, y, z, min_=min_parascore))
+        preprocess.append(lambda x, y, z: remove_sentences_with_too_many_numbers(x, y, z, max_numbers))
+        preprocess.append(lambda x, y, z: remove_sentences_with_too_many_special_characters(x, y, z, max_special_characters=max_special_characters))
+        preprocess.append(lambda x, y, z: remove_short_sentences_by_chars(x, y, z, min_length))
+        preprocess.append(lambda x, y, z: remove_sentences_with_different_lengths(x, y, z, max_length_diff))
+    else:
+        preprocess = None
     return read(
         path=path,
         orig_sl_filename=orig_sl_filename,
@@ -175,7 +179,7 @@ def euparl(min_length: int = 75,
 
 
 if __name__ == "__main__":
-    data = euparl()
+    data = euparl(filter=False)
     print(len(data))
     plt.figure()
     plt.hist(data["parascores"], bins="auto")
