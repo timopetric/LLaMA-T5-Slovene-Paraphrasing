@@ -12,17 +12,36 @@ ADD_END_TOKEN = None
 REVERSE_INPUT_OUTPUT = False
 GRADIENT_ACCUMULATION_STEPS = 16
 
-VERSION_STR = "0.0.2-LLaMApara"
+######################### DATASET ###########################
+# DATASET_PATH = None # add path to dataset here
+
+# # llama dataset
+# DATASET_PATH = "/d/hpc/home/tp1859/nlp/opus/europarl-llama"
+# DATASET_ORIG_SENTS_FILE = "europarl-orig-sl.out"
+# DATASET_TRAN_SENTS_FILE = "europarl-llamapara-sl.out"
+# VERSION_DATASET_ENDING = "LLaMApara"
+
+# euparl translated dataset
+DATASET_PATH = "/d/hpc/home/tp1859/nlp/opus/euparl600k_ensl"
+DATASET_ORIG_SENTS_FILE = "europarl-orig-sl-all.out"
+DATASET_TRAN_SENTS_FILE = "europarl-tran-all.out"
+VERSION_DATASET_ENDING = "Euparl600k_ensl"
+#############################################################
+
+
+
+VERSION_STR = "0.0.4-" + VERSION_DATASET_ENDING
 # version history:
 # 0.0.1-LLaMApara - uncleaned euparl-llama dataset (no cleaning, no deduplication)
 # 0.0.2-LLaMApara - cleaned and filtered euparl-llama dataset
+# 0.0.3-LLaMApara - cleaned and filtered dataset with parascore filtering
+# 0.0.4-{ds name} - add saving last checkpoint at the end of training
+#           + cleaned and filtered dataset with parascore filtering (default params for it)
+#           + ds name = "LLaMApara" or "Euparl600k_ensl"
 
 
-DATASET_PATH = None # add path to dataset here
-# DATASET_PATH = "/d/hpc/home/tp1859/nlp/nlp-course-skupina-8/src/translation/processed"
-DATASET_PATH = "/d/hpc/home/tp1859/nlp/opus/europarl-llama"
-DATASET_ORIG_SENTS_FILE = "europarl-orig-sl.out"
-DATASET_TRAN_SENTS_FILE = "europarl-llamapara-sl.out"
+
+
 PRINT_EXAMPLE_PAIR = True
 
 OUT_MODEL_CHECKPOINTS_DIR = "/d/hpc/projects/FRI/tp1859/nlp_project8/t5_model_checkpoints"

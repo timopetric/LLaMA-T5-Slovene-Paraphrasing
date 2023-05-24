@@ -2,7 +2,6 @@ import os
 from typing import Union, List
 from datasets.arrow_dataset import Dataset
 import pandas as pd
-import random
 import matplotlib.pyplot as plt
 import nltk
 from nltk.util import ngrams
@@ -59,7 +58,18 @@ def remove_sentences_with_different_lengths(original, translated, parascores, ma
     return new1, new2, new3
 
 
-def read(path: str = "../../data/euparl600k_ensl", orig_sl_filename: str = "europarl-orig-sl-all.out", tran_sl_filename: str = "europarl-tran-all.out", parascore_filename: Union[str, None] = "parascores.out", preprocess: Union[List[callable], None] = None, shuffle: bool = True, sort: bool = False, add_end_token=None, reverse_input_output=False, print_example_pair=False) -> Dataset:
+def read(path: str = "../../data/euparl600k_ensl",
+         orig_sl_filename: str = "europarl-orig-sl-all.out",
+         tran_sl_filename: str = "europarl-tran-all.out",
+         parascore_filename: Union[str, None] = "parascores.out",
+         preprocess: Union[List[callable], None] = None,
+         shuffle: bool = True,
+         sort: bool = False,
+         add_end_token=None,
+         reverse_input_output=False,
+         print_example_pair=False
+        ) -> Dataset:
+    
     original, translated, parascores = list(), list(), list()
     with open(os.path.join(path, orig_sl_filename)) as file:
         while True:
@@ -87,12 +97,14 @@ def read(path: str = "../../data/euparl600k_ensl", orig_sl_filename: str = "euro
     if reverse_input_output:
         original, translated = translated, original
         
+    assert len(original) == len(translated) == len(parascores), "Lengths of original, translated and parascores must be equal."
+        
     if print_example_pair:
         print("Example pair:")
-        import random
-        lin = random.randint(0, len(original))
         print("\tOriginal:  ", original[0])
         print("\tTranslated:", translated[0])
+        print("\tParascore: ", parascores[0])
+        print(f"Lenght of dataset: {len(original)}")
         print()
 
     df = pd.DataFrame()
@@ -108,7 +120,21 @@ def read(path: str = "../../data/euparl600k_ensl", orig_sl_filename: str = "euro
 
 
 
-def euparl(min_length: int = 75, max_numbers: int = 5, max_special_characters: int = 5, max_length_diff: int = 25, min_parascore: float = 0.5, path: str = "../../data/euparl600k_ensl", orig_sl_filename: str = "europarl-orig-sl-all.out", tran_sl_filename: str = "europarl-tran-all.out", parascore_filename: Union[str, None] = "parascores.out", shuffle: bool = True, sort: bool = False, add_end_token=None, reverse_input_output=False, print_example_pair=False) -> Dataset:
+def euparl(min_length: int = 75,
+           max_numbers: int = 5,
+           max_special_characters: int = 5,
+           max_length_diff: int = 25,
+           min_parascore: float = 0.5,
+           path: str = "../../data/euparl600k_ensl",
+           orig_sl_filename: str = "europarl-orig-sl-all.out",
+           tran_sl_filename: str = "europarl-tran-all.out",
+           parascore_filename: Union[str, None] = "parascores.out",
+           shuffle: bool = True,
+           sort: bool = False,
+           add_end_token=None,
+           reverse_input_output=False,
+           print_example_pair=False
+        ) -> Dataset:
     """
     Function reads data from given path, filters it and returns the result as a dataset.
     Parameters:
@@ -134,7 +160,18 @@ def euparl(min_length: int = 75, max_numbers: int = 5, max_special_characters: i
     preprocess.append(lambda x, y, z: remove_sentences_with_too_many_special_characters(x, y, z, max_special_characters=max_special_characters))
     preprocess.append(lambda x, y, z: remove_short_sentences_by_chars(x, y, z, min_length))
     preprocess.append(lambda x, y, z: remove_sentences_with_different_lengths(x, y, z, max_length_diff))
-    return read(path=path, orig_sl_filename=orig_sl_filename, tran_sl_filename=tran_sl_filename, parascore_filename=parascore_filename,preprocess=preprocess, shuffle=shuffle, sort=sort, add_end_token=add_end_token, reverse_input_output=reverse_input_output, print_example_pair=print_example_pair)
+    return read(
+        path=path,
+        orig_sl_filename=orig_sl_filename,
+        tran_sl_filename=tran_sl_filename,
+        parascore_filename=parascore_filename,
+        preprocess=preprocess,
+        shuffle=shuffle,
+        sort=sort,
+        add_end_token=add_end_token,
+        reverse_input_output=reverse_input_output,
+        print_example_pair=print_example_pair
+    )
 
 
 if __name__ == "__main__":
