@@ -83,7 +83,7 @@ def main():
         out_checkpoints_dir,
         evaluation_strategy = "epoch",
         save_strategy="epoch",
-        num_train_epochs=3,
+        num_train_epochs=4,
         load_best_model_at_end=True,
         save_steps=1000,
         eval_steps=1000,

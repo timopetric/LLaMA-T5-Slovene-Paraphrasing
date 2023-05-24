@@ -46,5 +46,5 @@ srun \
     && echo "Done."
 
 echo "Both parascores.out files should be in the current directory."
-echo "\t parascores-llama.out"
-echo "\t parascores-euparl-tran.out"
+echo -e "\t parascores-llama.out"
+echo -e "\t parascores-euparl-tran.out"
