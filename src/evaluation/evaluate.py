@@ -2,7 +2,7 @@ from score import score as sscore
 import os
 import sys
 sys.path.append("../paraphrasing")
-from read_data import euparl
+from read_data import euparl_
 from tqdm import tqdm
 import transformers
 import argparse
@@ -13,12 +13,11 @@ transformers.logging.set_verbosity_error()
 def main(DATASET_PATH, DATASET_ORIG_SENTS_FILE, DATASET_TRAN_SENTS_FILE):
     BATCH_SIZE_CPU=2048*8
     BATCH_SIZE_GPU=1024
-    diversity_factor = 0.1
     PARASCORES_OUT = os.path.join(DATASET_PATH, "parascores.out")
 
     print(f"Outputing scores to file: '{PARASCORES_OUT}'")
 
-    data = euparl(
+    data = euparl_(
         path=DATASET_PATH,
         orig_sl_filename=DATASET_ORIG_SENTS_FILE,
         tran_sl_filename=DATASET_TRAN_SENTS_FILE,

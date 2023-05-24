@@ -58,10 +58,7 @@ def remove_sentences_with_different_lengths(original, translated, parascores, ma
     return new1, new2, new3
 
 
-def read(path: str = "../../data/euparl600k_ensl",
-         orig_sl_filename: str = "europarl-orig-sl-all.out",
-         tran_sl_filename: str = "europarl-tran-all.out",
-         parascore_filename: Union[str, None] = "parascores.out",
+def read(files: List[tuple[str, str, str, Union[str, None]]] = [("../../data/euparl600k_ensl", "europarl-orig-sl-all.out", "europarl-tran-all.out", "parascores.out")],
          preprocess: Union[List[callable], None] = None,
          shuffle: bool = True,
          sort: bool = False,
@@ -71,25 +68,28 @@ def read(path: str = "../../data/euparl600k_ensl",
         ) -> Dataset:
     
     original, translated, parascores = list(), list(), list()
-    with open(os.path.join(path, orig_sl_filename)) as file:
-        while True:
-           l = file.readline()
-           if not l: break
-           original.append(l.strip("\n"))
-    with open(os.path.join(path, tran_sl_filename)) as file:
-        while True:
-           l = file.readline()
-           if not l: break
-           token_to_add = "" if add_end_token is None else add_end_token
-           translated.append(l.strip("\n") + token_to_add)
-
-    if parascore_filename is not None:
-        with open(os.path.join(path, "parascores.out")) as file:
+    for path, orig_sl_filename, tran_sl_filename, parascore_filename in files:
+        with open(os.path.join(path, orig_sl_filename)) as file:
             while True:
                 l = file.readline()
                 if not l: break
-                parascores.append(float(l.strip("\n")))
-    else: parascores = [1.0] * len(original)
+                original.append(l.strip("\n"))
+
+        if parascore_filename is not None:
+            with open(os.path.join(path, "parascores.out")) as file:
+                while True:
+                    l = file.readline()
+                    if not l: break
+                    parascores.append(float(l.strip("\n")))
+        else: parascores += [1.0] * (len(original)-len(translated))
+
+        with open(os.path.join(path, tran_sl_filename)) as file:
+            while True:
+                l = file.readline()
+                if not l: break
+                token_to_add = "" if add_end_token is None else add_end_token
+                translated.append(l.strip("\n") + token_to_add)
+
     if preprocess:
         for p in preprocess:
             original, translated, parascores = p(original, translated, parascores)
@@ -125,10 +125,7 @@ def euparl(min_length: int = 75,
            max_special_characters: int = 5,
            max_length_diff: int = 25,
            min_parascore: float = 0.5,
-           path: str = "../../data/euparl600k_ensl",
-           orig_sl_filename: str = "europarl-orig-sl-all.out",
-           tran_sl_filename: str = "europarl-tran-all.out",
-           parascore_filename: Union[str, None] = "parascores.out",
+           files: List[tuple[str, str, str, Union[str, None]]] = [("../../data/euparl600k_ensl", "europarl-orig-sl-all.out", "europarl-tran-all.out", "parascores.out")],
            shuffle: bool = True,
            sort: bool = False,
            add_end_token=None,
@@ -144,10 +141,7 @@ def euparl(min_length: int = 75,
         -max_special_characters: Maximum amount of allowed special characters in a sentence, default 5
         -max_length_diff: Maximum tolerated difference in length between a pair of sentences, default 25
         -min_parascore: Minimum parascore, default 0.5
-        -path: Path to dataset folder
-        -orig_sl_filename: Name of file containing original sentences, default europarl-orig-sl-all.out
-        -tran_sl_filename: Name of file containing translated sentences, default europarl-tran-all.out
-        -parascore_filename: Name of file containing translated sentences, default parascores.out, set to None if not available
+        -files: List of tuples describing path to data, of form (path, orig_sl_filename, tran_sl_filename, parascore_filename or None)
         -shuffle: Shuffle the dataset, default True (Only one of sort and shuffle can be True)
         -sort: Sort the dataset by descending parascores, default False (Only one of sort and shuffle can be True)
         -add_end_token: Token to be added at the end of the translated sentences, default None 
@@ -165,10 +159,7 @@ def euparl(min_length: int = 75,
     else:
         preprocess = None
     return read(
-        path=path,
-        orig_sl_filename=orig_sl_filename,
-        tran_sl_filename=tran_sl_filename,
-        parascore_filename=parascore_filename,
+        files=files,
         preprocess=preprocess,
         shuffle=shuffle,
         sort=sort,
@@ -176,6 +167,27 @@ def euparl(min_length: int = 75,
         reverse_input_output=reverse_input_output,
         print_example_pair=print_example_pair
     )
+
+def euparl_(min_length: int = 75,
+           max_numbers: int = 5,
+           max_special_characters: int = 5,
+           max_length_diff: int = 25,
+           min_parascore: float = 0.5,
+           path: str = "../../data/euparl600k_ensl",
+           orig_sl_filename: str = "europarl-orig-sl-all.out",
+           tran_sl_filename: str = "europarl-tran-all.out",
+           parascore_filename: Union[str, None] = "parascores.out",
+           shuffle: bool = True,
+           sort: bool = False,
+           add_end_token=None,
+           reverse_input_output=False,
+           print_example_pair=False,
+           filter=True
+        ) -> Dataset:
+    return euparl(min_length=min_length,max_numbers=max_numbers,max_special_characters=max_special_characters,
+                  max_length_diff=max_length_diff,min_parascore=min_parascore,files=[(path, orig_sl_filename, tran_sl_filename, parascore_filename)],
+                  shuffle=shuffle, sort=sort, add_end_token=add_end_token, reverse_input_output=reverse_input_output,
+                  print_example_pair=print_example_pair, filter=filter)
 
 
 if __name__ == "__main__":
