@@ -66,7 +66,8 @@ def main():
     print(f"per_device_train_batch_size: {BATCH_SIZE}, per_device_eval_batch_size: {BATCH_SIZE}")
     # print(model)
     
-    print(DATASET_ORIG_SENTS_FILE, DATASET_TRAN_SENTS_FILE)
+    print("Loading dataset...")
+    print("Original sentences file:\n\t'{}',\ntranslated sentences file:\n\t'{}'".format(DATASET_ORIG_SENTS_FILE, DATASET_TRAN_SENTS_FILE))
     
     data = euparl(
         path=DATASET_PATH,
@@ -115,7 +116,9 @@ def main():
         tokenizer=tokenizer,
     )
     trainer.train()
-
+    
+    # Save model
+    trainer.save_model(os.path.join(out_checkpoints_dir, "checkpoint_fin"))
 
 if __name__ == "__main__":
     main()
