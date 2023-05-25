@@ -17,6 +17,7 @@ def main(DATASET_PATH, DATASET_ORIG_SENTS_FILE, DATASET_TRAN_SENTS_FILE):
 
     print(f"Outputing scores to file: '{PARASCORES_OUT}'")
 
+    # used to generate parascores for the dataset
     data = euparl_(
         path=DATASET_PATH,
         orig_sl_filename=DATASET_ORIG_SENTS_FILE,
