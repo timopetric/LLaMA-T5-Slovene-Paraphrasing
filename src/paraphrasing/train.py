@@ -14,6 +14,7 @@ from config import (
     REVERSE_INPUT_OUTPUT,
     GRADIENT_ACCUMULATION_STEPS,
     VERSION_STR,
+    DATASET_FILES_LIST,
 )
 import os
 import torch
@@ -70,9 +71,7 @@ def main():
     print("Original sentences file:\n\t'{}',\ntranslated sentences file:\n\t'{}'".format(DATASET_ORIG_SENTS_FILE, DATASET_TRAN_SENTS_FILE))
     
     data = euparl(
-        path=DATASET_PATH,
-        orig_sl_filename=DATASET_ORIG_SENTS_FILE,
-        tran_sl_filename=DATASET_TRAN_SENTS_FILE,
+        files=DATASET_FILES_LIST,
         print_example_pair=PRINT_EXAMPLE_PAIR,
         add_end_token=ADD_END_TOKEN,
         reverse_input_output=REVERSE_INPUT_OUTPUT,

@@ -1,5 +1,5 @@
 import os
-from typing import Union, List
+from typing import Union, List, Tuple
 from datasets.arrow_dataset import Dataset
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -58,7 +58,7 @@ def remove_sentences_with_different_lengths(original, translated, parascores, ma
     return new1, new2, new3
 
 
-def read(files: List[tuple[str, str, str, Union[str, None]]] = [("../../data/euparl600k_ensl", "europarl-orig-sl-all.out", "europarl-tran-all.out", "parascores.out")],
+def read(files: List[Tuple[str, str, str, Union[str, None]]] = [("../../data/euparl600k_ensl", "europarl-orig-sl-all.out", "europarl-tran-all.out", "parascores.out")],
          preprocess: Union[List[callable], None] = None,
          shuffle: bool = True,
          sort: bool = False,
@@ -76,12 +76,13 @@ def read(files: List[tuple[str, str, str, Union[str, None]]] = [("../../data/eup
                 original.append(l.strip("\n"))
 
         if parascore_filename is not None:
-            with open(os.path.join(path, "parascores.out")) as file:
+            with open(os.path.join(path, parascore_filename)) as file:
                 while True:
                     l = file.readline()
                     if not l: break
                     parascores.append(float(l.strip("\n")))
-        else: parascores += [1.0] * (len(original)-len(translated))
+        else:
+            parascores += [1.0] * (len(original)-len(translated))
 
         with open(os.path.join(path, tran_sl_filename)) as file:
             while True:
@@ -125,7 +126,7 @@ def euparl(min_length: int = 75,
            max_special_characters: int = 5,
            max_length_diff: int = 25,
            min_parascore: float = 0.5,
-           files: List[tuple[str, str, str, Union[str, None]]] = [("../../data/euparl600k_ensl", "europarl-orig-sl-all.out", "europarl-tran-all.out", "parascores.out")],
+           files: List[Tuple[str, str, str, Union[str, None]]] = [("../../data/euparl600k_ensl", "europarl-orig-sl-all.out", "europarl-tran-all.out", "parascores.out")],
            shuffle: bool = True,
            sort: bool = False,
            add_end_token=None,
@@ -149,6 +150,17 @@ def euparl(min_length: int = 75,
         -print_example_pair: Prints a random pair of sentences, default False
         -filter: Whether to run any filtering at all, default True
     """
+    
+    # check that files in files exist
+    for path, orig_sl_filename, tran_sl_filename, parascore_filename in files:
+        assert os.path.exists(os.path.join(path, orig_sl_filename)), f"File {orig_sl_filename} does not exist in {path}."
+        assert os.path.exists(os.path.join(path, tran_sl_filename)), f"File {tran_sl_filename} does not exist in {path}."
+        if parascore_filename is not None:
+            assert os.path.exists(os.path.join(path, parascore_filename)), f"File {parascore_filename} does not exist in {path}."
+            
+    if len(files) > 1:
+        assert shuffle == True, "Shuffle must be True if more than one dataset is given in the files parameter."
+    
     if filter:
         preprocess = list()
         preprocess.append(lambda x, y, z: remove_sentences_by_parascore(x, y, z, min_=min_parascore))
@@ -191,7 +203,25 @@ def euparl_(min_length: int = 75,
 
 
 if __name__ == "__main__":
-    data = euparl(filter=False)
+    data = euparl(
+        filter=True,
+        files=[(
+            "/d/hpc/projects/FRI/tp1859/nlp_project8/opus2/MaCoCu-sl-en_v1.0_slx2",
+            "MaCoCu-sl-en_v1.0_slx2-orig-sl.out",
+            "MaCoCu-sl-en_v1.0_slx2-tran-sl.out",
+            "parascores.out"
+        )]
+    )
+
+    print(len(data))
+    print(data["original"][0:5])
+        
+    with open("mocacu_1000_orig_sl.txt", "a") as f, open("mocacu_1000_tran_sl.txt", "a") as g:
+        for orig, tran in zip(data["original"], data["translated"][:1000]):
+            f.write(orig + "\n")
+            g.write(tran + "\n")
+
+    exit(0)
     print(len(data))
     plt.figure()
     plt.hist(data["parascores"], bins="auto")
