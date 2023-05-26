@@ -50,6 +50,20 @@ The script accepts the following arguments:
 
 Note: If the specified `scores_folder_path` does not exist, the script will create it.
 
+#### evaluation/run.sh
+
+Each dataset block in the run.sh file contains the necessary variables for the evaluation. Make sure to modify these variables according to your dataset paths and filenames.
+
+For example, if you want to evaluate the `europarl-llama` dataset, uncomment the block of code for that dataset and update the following variables:
+
+- `DATASET_PATH` variable represents the path to the dataset you want to evaluate.
+- `DATASET_ORIG_SENTS_FILE` variable represents the file containing the original sentences of the dataset.
+- `DATASET_TRAN_SENTS_FILE` variable represents the file containing the paraphrased sentences of the dataset.
+
+Once you have made the necessary modifications, you can run the run.sh script. It will execute the evaluate.py script with the provided dataset variables.
+
+If you prefer to run the evaluation separately without using the run.sh script, you can directly execute the evaluate.py script and pass the dataset variables as command-line arguments.
+
 ### Report
 
 Report is located in folder `report`
