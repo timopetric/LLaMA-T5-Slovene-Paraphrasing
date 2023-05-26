@@ -18,9 +18,9 @@ This script plots the distribution of scores and writes the best paraphrases to 
 
 Arguments:
 
-- `--scores_path`: Path to the directory containing the scores files. (Default: "../paraphrasing/paraphrase_scores_t5")
-- `--paraphrases_path`: Path to the directory containing the paraphrases files. (Default: "../paraphrasing/generated_paraphrases_euparl_t5")
-- `--output_directory`: Output directory for the best paraphrases. (Default: "best_generate_paraphrases")
+- `--scores_path`: Path to the directory containing the scores files.
+- `--paraphrases_path`: Path to the directory containing the paraphrases files.
+- `--output_directory`: Output directory for the best paraphrases.
 
 <!-- The script can be run on an HPC system using the following command:
 
