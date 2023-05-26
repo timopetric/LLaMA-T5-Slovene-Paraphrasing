@@ -203,18 +203,47 @@ def euparl_(min_length: int = 75,
 
 
 if __name__ == "__main__":
-    data = euparl(
-        filter=True,
-        files=[(
-            "/d/hpc/projects/FRI/tp1859/nlp_project8/opus2/MaCoCu-sl-en_v1.0_slx2",
-            "MaCoCu-sl-en_v1.0_slx2-orig-sl.out",
-            "MaCoCu-sl-en_v1.0_slx2-tran-sl.out",
-            "parascores.out"
-        )]
-    )
+    dataset_files_list = []
 
-    print(len(data))
-    print(data["original"][0:5])
+    # # llama dataset
+    # dataset_files_list.append((
+    #     "/d/hpc/home/tp1859/nlp/opus/europarl-llama",
+    #     "europarl-orig-sl.out",
+    #     "europarl-llamapara-sl.out",
+    #     "parascores.out"
+    # ))
+    # euparl translated dataset
+    dataset_files_list.append((
+        "/d/hpc/home/tp1859/nlp/opus/euparl600k_ensl",
+        "europarl-orig-sl-all.out",
+        "europarl-tran-all.out",
+        "parascores.out"
+    ))
+    # MaCoCu translated dataset
+    # dataset_files_list.append((
+    #     "/d/hpc/projects/FRI/tp1859/nlp_project8/opus2/MaCoCu-sl-en_v1.0_slx2",
+    #     "MaCoCu-sl-en_v1.0_slx2-orig-sl.out",
+    #     "MaCoCu-sl-en_v1.0_slx2-tran-sl.out",
+    #     "parascores.out"
+    # ))
+    
+    for filter in (True, False):
+        data = euparl(
+            filter=filter,
+            files=dataset_files_list,
+        )
+        print("$$$$$$$$ FILTER = ", str(filter), ", len: " + str(len(data)))
+        print("\tdatasets:" + ", ".join([d[0] for d in dataset_files_list]))
+    
+    
+
+    # print(len(data))
+    # print(data["original"][:5])
+    
+    # for i in range(20):
+    #     print(data["original"][i], "\n\t", data["translated"][i], "\n")
+    
+    exit(0)
         
     with open("mocacu_1000_orig_sl.txt", "a") as f, open("mocacu_1000_tran_sl.txt", "a") as g:
         for orig, tran in zip(data["original"], data["translated"][:1000]):

@@ -91,18 +91,17 @@ export HF_HOME="/d/hpc/projects/FRI/tp1859/nlp_project8/tmp/transformers_cache_m
 ##################################################################
 #################### MaCoCu-1000x eval ###########################
 ##################################################################
-DATASET_PATH="/d/hpc/projects/FRI/tp1859/nlp_project8/opus2/MaCoCu-sl-en_v1.0_slx2TODO"
-DATASET_ORIG_SENTS_FILE="MaCoCu-sl-en_v1.0_slx2-orig-slTODO.out"
-DATASET_TRAN_SENTS_FILE="MaCoCu-sl-en_v1.0_slx2-tran-slTODO.out"
+DATASET_PATH="/d/hpc/home/tp1859/nlp/nlp-course-skupina-8/src/evaluation"
+DATASET_ORIG_SENTS_FILE="1mocacu_200x_orig_sl.txt"
+DATASET_TRAN_SENTS_FILE="4MaCoCu-1000_llamapara_en_to_sl_tran_from3.out"
 echo "Evaluating on $DATASET_PATH"
 srun \
     -N1 \
     -n1 \
-    --reservation=fri-vr \
     --cpus-per-task=8 \
     --partition=gpu \
     --gpus=1 \
-    --time=1-00:00 \
+    --time=0-01:00 \
     --job-name="nlp" \
     --mem=64G \
     singularity exec --nv /d/hpc/projects/FRI/tp1859/nlp_project8/lma/containers/hf.sif python3 evaluate.py \
@@ -112,6 +111,7 @@ srun \
     && cp "$DATASET_PATH/parascores.out" parascores-MaCoCu-1000x-eval.out \
     && echo "Done."
 
-echo "Both parascores.out files should be in the current directory."
-echo -e "\t parascores-llama.out"
-echo -e "\t parascores-euparl-tran.out"
+echo "All parascores.out files should be in the current directory."
+# echo -e "\t parascores-llama.out"
+# echo -e "\t parascores-euparl-tran.out"
+echo -e "\t parascores-MaCoCu-1000x-eval.out"

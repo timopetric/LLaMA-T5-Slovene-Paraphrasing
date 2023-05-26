@@ -5,6 +5,8 @@ import os
 # # BATCH_SIZE = 16 is too large for 32GB GPU memory
 
 MODEL_CHECKPOINT_TO_FINETUNE = "cjvt/t5-sl-small"
+# MODEL_CHECKPOINT_TO_FINETUNE = "/d/hpc/projects/FRI/tp1859/nlp_project8/t5_model_checkpoints/finetune_t5-sl-small_v0.0.6-LLaMApara-MaCoCu-slx2_b4_lr3E-05_g16_j38765749/checkpoint-12080"
+
 BATCH_SIZE = 4
 LEARING_RATE = 3e-5
 # ADD_END_TOKEN = " </s>"  # ? TODO: used for testing, maybe not needed
@@ -93,7 +95,7 @@ T5_TASK_PREFIX = "parafraziraj: "
 OUT_MODEL_CHECKPOINTS_DIR = "/d/hpc/projects/FRI/tp1859/nlp_project8/t5_model_checkpoints"
 # MODEL_CHECKPOINT_FIN_GLOB = "finetune*/checkpoint-*"
 # MODEL_CHECKPOINT_FIN_GLOB = "finetune_t5-sl-small_*_g8_*/checkpoint-*"
-MODEL_CHECKPOINT_FIN_GLOB = "*v0.0.6*/checkpoint*"
+MODEL_CHECKPOINT_FIN_GLOB = "*v0.0.4*/checkpoint*fin"
 
 
 MODEL_CHECKPOINT_TO_FINETUNE = os.getenv("NLP8_ENV_MODEL_CHECKPOINT_TO_FINETUNE", MODEL_CHECKPOINT_TO_FINETUNE)

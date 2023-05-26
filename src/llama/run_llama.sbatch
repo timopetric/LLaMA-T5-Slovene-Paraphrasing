@@ -10,9 +10,6 @@
 #SBATCH --nodes=1                  # SELECT 1 NODE
 #SBATCH --array=0
 
-##SBATCH --mail-type=ALL
-##SBATCH --mail-user=TODO@student.uni-lj.si
-
 # #############################################
 # # Run vicuna 13B model for paraphrasing
 # # 30 GB ram needed for 13B (only needed at init, before the model is loaded to GPU)
@@ -26,6 +23,7 @@ srun \
         python3 cli.py \
             --num-gpus 1 \
             --model-path model_hf_vicuna \
-            --corpus-name europarl \
-            --file-in data/europarl-orig-all.out
+            --corpus-name Mocacu-llamapara \
+            --file-in /d/hpc/home/tp1859/nlp/nlp-course-skupina-8/src/translation/processed/MaCoCu-1000_orig_sl-tran-0.out
+            # --file-in data/europarl-orig-all.out
             # --debug # --max-gpu-memory 10GiB
