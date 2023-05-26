@@ -64,6 +64,37 @@ Once you have made the necessary modifications, you can run the run.sh script. I
 
 If you prefer to run the evaluation separately without using the run.sh script, you can directly execute the evaluate.py script and pass the dataset variables as command-line arguments.
 
+
+------
+
+## Run the T5 model
+
+\*You have to have `transformers` python library installed. Preferrably the one with GPU/CUDA support.
+\*The Singularity (Docker) image with the prepared env is already set up in the shared location `/d/hpc/projects/FRI/tp1859/nlp_project8/lma/containers/hf.sif` on _Arnes HPC_.
+
+1. Move to `src/paraphrasing` directory.
+1. Download the `finetune_t5-sl-small_v0.0.4-Euparl600k_ensl_b4_lr3E-05_g16_j38753698` model from: 
+https://unilj-my.sharepoint.com/:f:/g/personal/tp1859_student_uni-lj_si/Eie-WJrrsIVAiJCFNQ8r28UBhKVq6vxhvNcud7RgXTr0tw?e=Xot15v
+2. Rename the downloaded folder to `models/t5model`.
+3. change `OUT_MODEL_CHECKPOINTS_DIR` in `config.py` to `models`.
+4. change `MODEL_CHECKPOINT_FIN_GLOB` in `config.py` to `t5*`.
+5. run `python3 inference.py` or `sbatch run.sbatch` if running on _Arnes HPC_.
+
+## Run the LLaMA/Vicuna based model
+
+\*You have to have `transformers` python library installed. Preferrably the one with GPU/CUDA support.
+\*The Singularity (Docker) image with the prepared env is already set up in the shared location `/d/hpc/projects/FRI/tp1859/nlp_project8/lma/containers/hf.sif` on _Arnes HPC_.
+
+Since the model weights setup is quite difficult to do and the weights transformations consume large amounts of disk (at least 60 GB with intermediate cleanups) and RAM (60GB) we have prepared the already converted weights and uploaded them to the shared _Arnes HPC_ space at path: `/d/hpc/projects/FRI/tp1859/nlp_project8/lma/model_hf_vicuna`. The Vicuna/LLaMA 13B model is in half precision and takes about 25 GB of VRAM on the GPU.
+
+You can then run the paraphrase generation by modifying the `run_llama.sbatch` script in `src/llama` directory. You should set `--model-path` to the above LLaMA model wights directory.
+Then change the `--corpus-name` to some string and set `--file-in` to a file containing 1 english sentence per line. Then you can run the inference by running `sbatch run_llama.sbatch`. Output files will be in `processed` directory, logs in `logs`.
+
+### Translation
+
+You can run translation with NEmO model simillarly as described in T5 / Vicuna section. Needed files like `run_translation.sbatch` are in `src/translation` dir.
+
+
 ### Report
 
 Report is located in folder `report`
