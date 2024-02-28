@@ -1,16 +1,21 @@
-# Natural language processing course 2022/23: `Paraphrasing sentences`
+# LLaMA-T5-Slovene-Paraphrasing
 
-Team members:
+### Natural Language Processing course 2022-23 at Faculty of Computer and Information Science at University of Ljubljana
 
-- `Matej Kranjec`, `63200340`, `mk7972@student.uni-lj.si`
-- `Timotej Petrič`, `63160264`, `tp1859@student.uni-lj.si`
-- `Domen Vilar`, `63180310`, `dv6526@student.uni-lj.si`
+This is a NLP course project in which we explored ways of Slovene language sentence paraphrisation.
+The best approach turned out to be traslating original Slovene sentence into English, use Vicuna/LLaMA (1st gen) to paraphrase the sentence and then translate the results back into Slovene.
 
-Group public acronym/name: `skupina 8`
+### The [PDF report describing the methodology is located here](report/NLP_project_Paraphrasing_Sentences.pdf).
 
-> This value will be used for publishing marks/scores. It will be known only to you and not you colleagues.
+### Team members:
 
-### Evaluation
+- `Matej Kranjec`
+- `Timotej Petrič`
+- `Domen Vilar`
+
+#### 
+
+## Evaluation
 
 #### plot_distribution_scores.py
 
@@ -64,8 +69,6 @@ Once you have made the necessary modifications, you can run the run.sh script. I
 
 If you prefer to run the evaluation separately without using the run.sh script, you can directly execute the evaluate.py script and pass the dataset variables as command-line arguments.
 
-
-------
 
 ## Run the T5 model
 
